@@ -1,0 +1,49 @@
+const supabase = require("../config/supabase");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+// Registrar usuário
+exports.register = async (req, res) => {
+  const { nome_usuario, nome, email, senha } = req.body;
+
+  try {
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    const { data, error } = await supabase
+      .from("usuario")
+      .insert([{ nome_usuario, nome, email, senha: senhaHash }])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({ message: "Usuário registrado com sucesso", usuario: data[0] });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// Login usuário
+exports.login = async (req, res) => {
+  const { nome_usuario, senha } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from("usuario")
+      .select("*")
+      .eq("nome_usuario", nome_usuario)
+      .single();
+
+    if (error || !data) throw new Error("Usuário não encontrado");
+
+    const senhaValida = await bcrypt.compare(senha, data.senha);
+    if (!senhaValida) throw new Error("Senha incorreta");
+
+    const token = jwt.sign({ id: data.id, nome_usuario: data.nome_usuario }, process.env.JWT_SECRET, {
+      expiresIn: "8h",
+    });
+
+    res.json({ message: "Login realizado", token });
+  } catch (err) {
+    res.status(401).json({ error: err.message });
+  }
+};

@@ -1,0 +1,8 @@
+/backend/node_modules/
+app-relatorios-internos/node_modules/
+/backend/.env
+app-relatorios-internos/.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.expo/
