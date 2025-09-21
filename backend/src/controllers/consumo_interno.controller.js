@@ -1,9 +1,8 @@
 const supabase = require("../config/supabase");
 
-// Criar relatório
-exports.criarRelatorio = async (req, res) => {
+exports.criarConsumoInterno = async (req, res) => {
   const { produto, data, quantidade, preco } = req.body;
-  const usuario_id = req.user.id; // vem do JWT
+  const usuario_id = req.user.id; 
 
   try {
     const { data: result, error } = await supabase
@@ -19,8 +18,8 @@ exports.criarRelatorio = async (req, res) => {
   }
 };
 
-// Listar relatórios do usuário
-exports.listarRelatorios = async (req, res) => {
+
+exports.listarConsumoInterno = async (req, res) => {
   const usuario_id = req.user.id;
 
   try {
