@@ -1,6 +1,6 @@
 const supabase = require("../config/supabase");
 
-exports.criarConsumoInterno = async (req, res) => {
+exports.cadastrarConsumoInterno = async (req, res) => {
   const { produto, data, quantidade, preco } = req.body;
   const usuario_id = req.user.id; 
 
