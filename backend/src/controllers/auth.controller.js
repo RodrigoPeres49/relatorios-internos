@@ -52,33 +52,40 @@ exports.updatePassword = async (req, res) => {
   const{senha_antiga, nova_senha} = req.body;
 
   try{
-    const{data,error} = await supabase
-      .from("usuario")
-      .select("senha")
-      .eq("nome_usuario", nome_usuario)
-      .single();
 
-    if (error || !data) throw new Error("Usuario não encontrado");
+    const isUUID = id.includes("-") && ondblclick.length === 36
+    let query = supabase.from("usuario").select("id, senha");
+  
+    if (isUUID) {
+      query = query.eq("id", id);
+    } else {
+      query = query.eq("nome_usuario", id);
+    }
 
-    const senhaValida = await bcrypt.compare(senha_antiga,data.senha);
-    if(!senhaValida) throw new Error("Senha antiga incorreta");
+    const { data: user, error } = await query.single();
+
+    if (error || !user) throw new Error("Usuário não encontrado");
+
+        const senhaValida = await bcrypt.compare(senha_antiga, user.senha);
+    if (!senhaValida) throw new Error("Senha antiga incorreta");
 
     const novaSenhaHash = await bcrypt.hash(nova_senha, 10);
 
-    const{ error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("usuario")
-      .update({senha: novaSenhaHash})
-      .eq("id", id);
+      .update({ senha: novaSenhaHash })
+      .eq("id", user.id);
 
     if (updateError) throw updateError;
 
-    res.json({message: "Senha atualizada com sucesso!"});
-    
-    
-  } catch(err) {
-    res.status(400).json({error: err.message});
+    res.json({ message: "Senha atualizada com sucesso!" });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 }
+
+
+// CONSULTAR USUARIO
 
 // LOGIN USUARIO
 
