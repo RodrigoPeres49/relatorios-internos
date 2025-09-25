@@ -1,5 +1,7 @@
 const supabase = require("../config/supabase");
 
+// CADASTRAR O CONSUMO INTERNO
+
 exports.cadastrarConsumoInterno = async (req, res) => {
   const { produto, data, quantidade, preco } = req.body;
   const usuario_id = req.user.id; 
@@ -18,15 +20,13 @@ exports.cadastrarConsumoInterno = async (req, res) => {
   }
 };
 
+// LISTAR CONSUMO INTERNO
 
 exports.listarConsumoInterno = async (req, res) => {
-  const usuario_id = req.user.id;
-
   try {
     const { data, error } = await supabase
       .from("relatorio_consumo_interno")
       .select("*")
-      .eq("usuario_id", usuario_id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
